@@ -1,5 +1,3 @@
-set search_path = "public";
-
 CREATE TABLE if not exists Download
 (
     id          BIGSERIAL       NOT NULL,
@@ -8,8 +6,6 @@ CREATE TABLE if not exists Download
     finished    BOOLEAN,
     CONSTRAINT pk_download PRIMARY KEY (id)
 );
-
-
 CREATE TABLE if not exists FilePart
 (
     id               BIGSERIAL NOT NULL,
@@ -20,5 +16,4 @@ CREATE TABLE if not exists FilePart
     CONSTRAINT pk_filepart PRIMARY KEY (id),
     CONSTRAINT FK_FILEPART_ON_DOWNLOAD FOREIGN KEY (download_id) REFERENCES Download (id)
 );
-
-create sequence filepart_id_seq INCREMENT 1;
+create sequence if not exists  filepart_id_seq INCREMENT 1;
