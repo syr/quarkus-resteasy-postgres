@@ -1,5 +1,6 @@
 package org.acme;
 
+import io.quarkus.arc.All;
 import io.quarkus.runtime.StartupEvent;
 import org.acme.service.Service;
 
@@ -17,11 +18,8 @@ public class TestResource {
 
     private static final Logger LOG = Logger.getLogger("DownloadSyncResource");
 
-    @Inject @TypeA
+    @Inject @All
     Instance<Service> service;
-
-//    @Inject @TypeA
-//    List<InstanceHandle<Service>> instanceHandleList;
 
     void onStart(@Observes StartupEvent ev) {
         Service service = this.service.get();

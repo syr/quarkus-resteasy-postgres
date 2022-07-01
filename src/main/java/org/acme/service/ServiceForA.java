@@ -1,9 +1,11 @@
 package org.acme.service;
 
-import org.acme.TypeA;
+import org.acme.SupportsJobType;
+import org.acme.model.JobType;
 
 import javax.enterprise.context.ApplicationScoped;
+
 @ApplicationScoped
-@TypeA
+@SupportsJobType(JobType.A)
 public class ServiceForA extends Service{
 }
