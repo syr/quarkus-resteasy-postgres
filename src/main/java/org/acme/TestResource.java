@@ -1,38 +1,28 @@
 package org.acme;
 
-import io.quarkus.arc.All;
-import io.quarkus.arc.InstanceHandle;
-import io.quarkus.runtime.StartupEvent;
-import io.smallrye.mutiny.Uni;
-import io.smallrye.mutiny.infrastructure.Infrastructure;
-import org.acme.model.JobType;
-import org.acme.service.Service;
+import org.acme.service.TestService;
+import org.jboss.logging.Logger;
 
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import javax.transaction.SystemException;
+import javax.transaction.TransactionManager;
 import javax.transaction.Transactional;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import java.util.List;
-import java.util.logging.Logger;
 
 @Path("/test")
 public class TestResource {
 
-    private static final Logger LOG = Logger.getLogger("DownloadSyncResource");
+    @Inject
+    Logger log;
 
-    @Inject @All
-    List<InstanceHandle<Service>> services;
+    @Inject
+    TestService testService;
 
-    void onStart(@Observes StartupEvent ev) {
-        JobType jobTypeFromAnnotation = ((SupportsJobType) services.get(0).getBean().getQualifiers().stream().filter(q -> q.annotationType() == SupportsJobType.class).findFirst().get()).value();
-//        TODO in service method: determine which service to use by poassed JobEntity
-//        LOG.info("test: ");
-//        Arc.container().listAll(Service.class, SupportsJobType.class);
-    }
-
+    @Inject
+    TransactionManager transactionManager;
 
 // TODO test context propagation, precondition:
 //    https://quarkus.io/guides/transaction
@@ -47,26 +37,38 @@ public class TestResource {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     @Transactional
-    public String transactionalWithMutiny() {
-        LOG.info("short task started");
+    public void test() throws Exception {
 
-        Uni.createFrom().item("testitem")
-                .onItem()
-                .invoke(i -> LOG.info("long task started"))
-                .emitOn(Infrastructure.getDefaultExecutor())
-                .invoke(i -> {
-                    try {
-                        Thread.sleep(3000);
-                        LOG.info("long task finished");
-                    } catch (InterruptedException e) {
+//        Docu: https://quarkus.io/guides/transaction
 
-                    }
-                })
-                .log()
-                .subscribe().with(i -> {});
+//        TEST#1 Transactional.TxType.REQUIRED: methodRequiresTX() runs in same tx as test()
+//        logTX();
+//        testService.methodRequiresTX();
+//            TODO TEST#1b add fail & rollback tests
 
-        LOG.info("short task finished");
-        return "";
+
+//        TEST#2 Transactional.TxType.REQUIRES_NEW:
+//          1. on methodRequiresNewTX(): tx of test() is suspended/paused
+//          2. methodRequiresNewTX() executed in new tx
+//          3. after methodRequiresNewTX: test() continues with its tx
+//        logTX();
+//        testService.methodRequiresNewTX();
+//        logTX();
+//            TODO TEST#2b add fail & rollback tests
+
+//        TEST#3 Transactional.TxType.NOT_SUPPORTED:
+//          1. on methodNotSupportsTX(): tx of test() is suspended/paused
+//          2. methodNotSupportsTX() executed without tx
+//          3. after methodNotSupportsTX: test() continues with its tx
+        logTX();
+        testService.methodNotSupportsTX();
+        logTX();
+
+//            TODO TEST#3b add fail & rollback tests
+    }
+
+    private void logTX() throws SystemException {
+        log.info(transactionManager.getTransaction().toString());
     }
 
 }
