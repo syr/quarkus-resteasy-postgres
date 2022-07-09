@@ -1,6 +1,5 @@
-package org.acme.service;
+package org.acme;
 
-import org.acme.TestException;
 import org.jboss.logging.Logger;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -10,7 +9,7 @@ import javax.transaction.TransactionManager;
 import javax.transaction.Transactional;
 
 @ApplicationScoped
-public class TestService{
+public class ChildService {
 
     @Inject
     Logger log;
@@ -20,7 +19,7 @@ public class TestService{
 
 //    (default): starts a transaction if none was started, stays with the existing one otherwise.
     @Transactional(Transactional.TxType.REQUIRED)
-    public void methodRequiresTX(boolean fail) throws SystemException {
+    public void methodRequiresTx(boolean fail) throws SystemException {
         logTX();
         if(fail) throw new TestException(transactionManager.getTransaction());
         // results in tx status: ActionStatus.ABORT_ONLY
@@ -29,7 +28,7 @@ public class TestService{
 //    starts a transaction if none was started
 //    if an existing one was started, suspends it and starts a new one for the boundary of that method.
     @Transactional(Transactional.TxType.REQUIRES_NEW)
-    public void methodRequiresNewTX(boolean fail) throws SystemException {
+    public void methodRequiresNewTx(boolean fail) throws SystemException {
         logTX();
         if(fail) throw new TestException(transactionManager.getTransaction());
         // results in tx status: ActionStatus.ABORTED
@@ -38,7 +37,7 @@ public class TestService{
 //    if a transaction was started, suspends it and works with no transaction for the boundary of the method
 //    otherwise works with no transaction.
     @Transactional(Transactional.TxType.NOT_SUPPORTED)
-    public void methodNotSupportsTX(boolean fail) throws SystemException {
+    public void methodNotSupportsTx(boolean fail) throws SystemException {
         logTX();
         if(fail) throw new RuntimeException("simulate failure");
     }
