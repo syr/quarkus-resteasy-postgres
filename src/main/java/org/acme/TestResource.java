@@ -41,30 +41,45 @@ public class TestResource {
 
 //        Docu: https://quarkus.io/guides/transaction
 
-//        TEST#1 Transactional.TxType.REQUIRED: methodRequiresTX() runs in same tx as test()
-//        logTX();
-//        testService.methodRequiresTX();
-//            TODO TEST#1b add fail & rollback tests
+        logTX();
+
+//        TEST#1 Transactional.TxType.REQUIRED: methodRequiresTX() runs in same tx as test().
+//        Exception in subservice also affects/propagates to main service and causes ABORT/ROLLBACK because TX is identical
+//        try{
+//          testService.methodRequiresTX(false);
+//          testService.methodRequiresTX(true);
+//        } catch (TestException e){
+//            log transaction from methodRequiresTX after fail
+//            log.error(e.getTransaction().toString());
+//        }
 
 
 //        TEST#2 Transactional.TxType.REQUIRES_NEW:
+//        Exception in subservice NOT affecting/propagating to main service because separate dedicated TX
 //          1. on methodRequiresNewTX(): tx of test() is suspended/paused
 //          2. methodRequiresNewTX() executed in new tx
-//          3. after methodRequiresNewTX: test() continues with its tx
-//        logTX();
-//        testService.methodRequiresNewTX();
-//        logTX();
-//            TODO TEST#2b add fail & rollback tests
+//          3. after methodRequiresNewTX finished/failed: test() continues with its tx
+        try{
+//          testService.methodRequiresNewTX(false);
+          testService.methodRequiresNewTX(true);
+        } catch (TestException e){
+//            log transaction from methodRequiresTX after fail
+            log.error(e.getTransaction().toString());
+        }
+
 
 //        TEST#3 Transactional.TxType.NOT_SUPPORTED:
+//        Exception in subservice NOT affecting/propagating to main service because no TX active
 //          1. on methodNotSupportsTX(): tx of test() is suspended/paused
 //          2. methodNotSupportsTX() executed without tx
 //          3. after methodNotSupportsTX: test() continues with its tx
-        logTX();
-        testService.methodNotSupportsTX();
+//        try{
+//            testService.methodNotSupportsTX(false);
+//            testService.methodNotSupportsTX(true);
+//        } catch (Exception e){}
+
         logTX();
 
-//            TODO TEST#3b add fail & rollback tests
     }
 
     private void logTX() throws SystemException {
