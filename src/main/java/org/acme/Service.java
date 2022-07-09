@@ -31,6 +31,10 @@ public class Service {
 //    and will be committed or rolled-back only at termination of the reactive value.
 
     // Docu: https://quarkus.io/guides/transaction
+    // next tests:
+    //      tx + mutiny
+    //      Add hibernate orm (in new branch) with included tx mgr
+    //      Add quartz
 
 
     // TEST#1 Transactional.TxType.REQUIRED: methodRequiresTX() runs in same tx as test().
