@@ -14,22 +14,22 @@ public class ServiceTest {
 
     @Test
     public void testRequiresTx() throws SystemException {
-       service.callMethodWhichRequiresTx(false);
+       service.callMethodRequiresTx(false);
     }
 
     @Test
     public void testRequiresTxFail() throws SystemException {
-        service.callMethodWhichRequiresTx(true);
+        service.callMethodRequiresTx(true);
     }
 
     @Test
     public void testRequiresNewTx() throws SystemException {
-        service.callMethodWhichRequiresNewTx(false);
+        service.callMethodRequiresNewTx(false);
     }
 
     @Test
     public void testRequiresNewTxFail() throws SystemException {
-        service.callMethodWhichRequiresNewTx(true);
+        service.callMethodRequiresNewTx(true);
     }
 
     @Test

@@ -20,27 +20,22 @@ public class Service {
     @Inject
     TransactionManager transactionManager;
 
-// TODO test context propagation, precondition:
-//    https://quarkus.io/guides/transaction
-//    If your @Transactional-annotated method returns a reactive value, such as:
-//    - CompletionStage (from the JDK)
-//    - Publisher (from Reactive-Streams)
-//    - Any type which can be converted to one of the two previous types using Reactive Type Converters
-//    then the behaviour is a bit different, because the transaction will not be terminated until the returned reactive value is terminated.
-//    In effect, the returned reactive value will be listened to and if it terminates exceptionally the transaction will be marked for rollback,
-//    and will be committed or rolled-back only at termination of the reactive value.
-
     // Docu: https://quarkus.io/guides/transaction
-    // next tests:
-    //      tx + mutiny
-    //      Add hibernate orm (in new branch) with included tx mgr
-    //      Add quartz
 
+    /*
+        TEST#1 Transactional.TxType.REQUIRED -> Transactional.TxType.REQUIRED
+        ChildService.methodRequiresTx runs in same tx as Service.callMethodRequiresTx.
+        Exception in ChildService.methodRequiresTx also affects Service.callMethodRequiresTx and causes ABORT/ROLLBACK of the same tx
 
-    // TEST#1 Transactional.TxType.REQUIRED: methodRequiresTX() runs in same tx as test().
-    // Exception in subservice also affects/propagates to main service and causes ABORT/ROLLBACK because TX is identical
+        tx boundaries:
+
+        tx1 {
+            Service.callMethodRequiresTx
+            ChildService.methodRequiresTx
+        }
+     */
     @Transactional
-    public void callMethodWhichRequiresTx(boolean fail) throws SystemException {
+    public void callMethodRequiresTx(boolean fail) throws SystemException {
         logTX();
         try{
             childService.methodRequiresTx(fail);
@@ -51,13 +46,28 @@ public class Service {
     }
 
 
-    // TEST#2 Transactional.TxType.REQUIRES_NEW:
-    // Exception in subservice NOT affecting/propagating to main service because separate dedicated TX
-    // 1. on methodRequiresNewTX(): tx of test() is suspended/paused
-    // 2. methodRequiresNewTX() executed in new tx
-    // 3. after methodRequiresNewTX finished/failed: test() continues with its tx
+    /*
+         TEST#2 Transactional.TxType.REQUIRED -> Transactional.TxType.REQUIRES_NEW:
+         ChildService.methodRequiresNewTx executed in separate tx
+         Exception in ChildService.methodRequiresNewTx NOT affecting tx of Service.callMethodRequiresNewTx
+         1. on call of ChildService.methodRequiresNewTx: current tx of Service.callMethodRequiresNewTx is suspended/paused
+         2. ChildService.methodRequiresNewTx executed in new tx
+         3. after ChildService.methodRequiresNewTx finished/failed: tx of Service.callMethodRequiresNewTx continues
+
+         tx boundaries:
+
+         tx1 {
+          Service.callMethodRequiresNewTx (code before ChildService.methodRequiresNewTx call)
+         }
+         tx2 {
+          ChildService.methodRequiresNewTx
+         }
+         tx1 {
+          Service.callMethodRequiresNewTx (code after ChildService.methodRequiresNewTx call)
+        }
+     */
     @Transactional
-    public void callMethodWhichRequiresNewTx(boolean fail) throws SystemException {
+    public void callMethodRequiresNewTx(boolean fail) throws SystemException {
         logTX();
         try{
             childService.methodRequiresNewTx(fail);
@@ -68,11 +78,23 @@ public class Service {
     }
 
 
-    // TEST#3 Transactional.TxType.NOT_SUPPORTED:
-    // Exception in subservice NOT affecting/propagating to main service because no TX active
-    // 1. on methodNotSupportsTX(): tx of test() is suspended/paused
-    // 2. methodNotSupportsTX() executed without tx
-    // 3. after methodNotSupportsTX: test() continues with its tx
+    /*
+         TEST#3 Transactional.TxType.REQUIRED -> Transactional.TxType.NOT_SUPPORTED:
+         Exception in ChildService.methodNotSupportsTx NOT affecting tx of Service.callMethodWhichNotSupportsTx because no TX active
+         1. on call of ChildService.methodNotSupportsTx: tx of Service.callMethodWhichNotSupportsTx is suspended/paused
+         2. org.acme.ChildService.methodNotSupportsTx executed without tx
+         3. after ChildService.methodNotSupportsTx finished/failed: tx of Service.callMethodWhichNotSupportsTx continues
+
+        tx boundaries:
+
+        tx1 {
+            Service.callMethodWhichNotSupportsTx (code before ChildService.methodNotSupportsTx call)
+        }
+        ChildService.methodNotSupportsTx (no tx active)
+        tx1 {
+            Service.callMethodWhichNotSupportsTx (code after ChildService.methodNotSupportsTx call)
+        }
+     */
     @Transactional
     public void callMethodWhichNotSupportsTx(boolean fail) throws SystemException {
         logTX();
@@ -87,4 +109,20 @@ public class Service {
         log.info(transactionManager.getTransaction().toString());
     }
 
+
+
+    //TODO  next tests:
+    //      tx + mutiny
+    //      Add hibernate orm (in new branch) with included tx mgr
+    //      Add quartz
+
+    // TODO test context propagation, precondition:
+//    https://quarkus.io/guides/transaction
+//    If your @Transactional-annotated method returns a reactive value, such as:
+//    - CompletionStage (from the JDK)
+//    - Publisher (from Reactive-Streams)
+//    - Any type which can be converted to one of the two previous types using Reactive Type Converters
+//    then the behaviour is a bit different, because the transaction will not be terminated until the returned reactive value is terminated.
+//    In effect, the returned reactive value will be listened to and if it terminates exceptionally the transaction will be marked for rollback,
+//    and will be committed or rolled-back only at termination of the reactive value.
 }
