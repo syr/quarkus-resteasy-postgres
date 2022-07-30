@@ -4,7 +4,7 @@ import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 
-@Mapper
+@Mapper(componentModel = "cdi")
 public abstract class SimpleSourceDestinationMapper {
 
 
