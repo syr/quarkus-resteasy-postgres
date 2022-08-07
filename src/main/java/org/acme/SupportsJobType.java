@@ -17,16 +17,11 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 public @interface SupportsJobType {
     JobType value();
 
-    class With extends AnnotationLiteral<SupportsJobType> implements SupportsJobType {
+    class WithValue extends AnnotationLiteral<SupportsJobType> implements SupportsJobType {
         JobType requestedJobType;
 
-
-        public With(JobType requestedJobType) {
+        public WithValue(JobType requestedJobType) {
             this.requestedJobType = requestedJobType;
-        }
-
-        public static With value(JobType value) {
-            return new With(value);
         }
 
         @Override

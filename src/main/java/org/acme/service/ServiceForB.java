@@ -10,4 +10,8 @@ import javax.enterprise.context.ApplicationScoped;
 @Unremovable
 @SupportsJobType(JobType.B)
 public class ServiceForB extends Service {
+    @Override
+    public String hello() {
+        return "hello from B";
+    }
 }

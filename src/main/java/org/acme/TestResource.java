@@ -1,7 +1,5 @@
 package org.acme;
 
-import io.quarkus.arc.Arc;
-import io.quarkus.arc.InstanceHandle;
 import io.quarkus.runtime.StartupEvent;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.infrastructure.Infrastructure;
@@ -22,9 +20,11 @@ public class TestResource {
     private static final Logger LOG = Logger.getLogger("TestResource");
 
     void onStart(@Observes StartupEvent ev) {
-    InstanceHandle<Service> instanceHandleA = Arc.container().instance(Service.class, SupportsJobType.With.value(JobType.A));
-    InstanceHandle<Service> instanceHandleB = Arc.container().instance(Service.class, SupportsJobType.With.value(JobType.B));
-        LOG.info("test: ");
+        Service serviceA = new Service().of(JobType.A);
+        Service serviceB = new Service().of(JobType.B);
+
+        LOG.info(serviceA.hello());
+        LOG.info(serviceB.hello());
     }
 
 
