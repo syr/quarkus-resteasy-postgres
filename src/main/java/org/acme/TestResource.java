@@ -14,7 +14,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import java.lang.annotation.Annotation;
 import java.util.logging.Logger;
 
 @Path("/test")
@@ -23,46 +22,9 @@ public class TestResource {
     private static final Logger LOG = Logger.getLogger("TestResource");
 
     void onStart(@Observes StartupEvent ev) {
-
-        //variant1 anonymous class
-        JobType requestedJobType = JobType.A;
-        InstanceHandle<Service> instanceHandleSupplier = Arc.container().instanceSupplier(Service.class, new SupportsJobType() {
-            @Override
-            public JobType value() {
-                return requestedJobType;
-            }
-
-            @Override
-            public Class<? extends Annotation> annotationType() {
-                return SupportsJobType.class;
-            }
-        }).get();
-
-
-        //variant2 implementation class
-        InstanceHandle<Service> instanceHandleA = Arc.container().instance(Service.class, new SupportsJobTypeImpl(JobType.A));
-        InstanceHandle<Service> instanceHandleB = Arc.container().instance(Service.class, new SupportsJobTypeImpl(JobType.B));
-
+    InstanceHandle<Service> instanceHandleA = Arc.container().instance(Service.class, SupportsJobType.With.value(JobType.A));
+    InstanceHandle<Service> instanceHandleB = Arc.container().instance(Service.class, SupportsJobType.With.value(JobType.B));
         LOG.info("test: ");
-    }
-
-
-    class SupportsJobTypeImpl implements SupportsJobType {
-        JobType requestedJobType;
-
-        public SupportsJobTypeImpl(JobType requestedJobType) {
-            this.requestedJobType = requestedJobType;
-        }
-
-        @Override
-        public JobType value() {
-            return requestedJobType;
-        }
-
-        @Override
-        public Class<? extends Annotation> annotationType() {
-            return SupportsJobType.class;
-        }
     }
 
 
