@@ -5,6 +5,7 @@ import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.infrastructure.Infrastructure;
 import org.acme.model.JobType;
 import org.acme.service.Service;
+import org.acme.service.ServiceLookup;
 
 import javax.enterprise.event.Observes;
 import javax.transaction.Transactional;
@@ -20,8 +21,8 @@ public class TestResource {
     private static final Logger LOG = Logger.getLogger("TestResource");
 
     void onStart(@Observes StartupEvent ev) {
-        Service serviceA = new Service().of(JobType.A);
-        Service serviceB = new Service().of(JobType.B);
+        Service serviceA = new ServiceLookup<>(Service.class).with(JobType.A);
+        Service serviceB = new ServiceLookup<>(Service.class).with(JobType.B);
 
         LOG.info(serviceA.hello());
         LOG.info(serviceB.hello());

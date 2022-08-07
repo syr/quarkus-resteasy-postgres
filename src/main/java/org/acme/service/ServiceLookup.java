@@ -1,17 +1,22 @@
 package org.acme.service;
 
-public class ServiceLookup<T> {
+import io.quarkus.arc.Arc;
+import org.acme.SupportsJobType;
+import org.acme.model.JobType;
 
-    private T t;
+public class ServiceLookup<T extends Service> {
 
-    public ServiceLookup() {
+    Class<T> clazz;
+
+    public ServiceLookup(Class<T> clazz) {
+        this.clazz = clazz;
     }
 
-    public ServiceLookup(T t) {
-        this.t = t;
+    public T with(JobType jobType){
+        return Arc.container().instance(clazz, new SupportsJobType.WithValue(jobType)).get();
     }
 
-//    public T of(JobType jobType) {
-//        return (T) Arc.container().instance(new TypeLiteral<T>, new SupportsJobType.WithValue(jobType)).get();
-//    }
+    public String hello() {
+        return "";
+    }
 }
