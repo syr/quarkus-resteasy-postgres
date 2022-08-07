@@ -21,8 +21,8 @@ public class TestResource {
     private static final Logger LOG = Logger.getLogger("TestResource");
 
     void onStart(@Observes StartupEvent ev) {
-        Service serviceA = new ServiceLookup<>(Service.class).with(JobType.A);
-        Service serviceB = new ServiceLookup<>(Service.class).with(JobType.B);
+        Service serviceA = ServiceLookup.get(Service.class, JobType.A);
+        Service serviceB = ServiceLookup.get(Service.class, JobType.B);
 
         LOG.info(serviceA.hello());
         LOG.info(serviceB.hello());
