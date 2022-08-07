@@ -6,6 +6,6 @@ import org.acme.model.JobType;
 
 public class ServiceLookup {
     public static  <T extends Service> T get(Class<T> clazz, JobType jobType){
-        return Arc.container().instance(clazz, new SupportsJobType.WithValue(jobType)).get();
+        return Arc.container().instance(clazz, new SupportsJobType.Impl(jobType)).get();
     }
 }
