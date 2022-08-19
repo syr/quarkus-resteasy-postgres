@@ -21,12 +21,30 @@ public class TestResource {
     private static final Logger LOG = Logger.getLogger("TestResource");
 
     void onStart(@Observes StartupEvent ev) {
-        Service serviceA = ServiceLookup.get(Service.class, JobType.A);
-        Service serviceB = ServiceLookup.get(Service.class, JobType.B);
+        Service serviceA = ServiceLookup.get(Service.class, JobType.A); //working -> finds ServiceForA
+        Service serviceA2 = ServiceLookup.get2(JobType.A);              //NOT working -> null
 
-        LOG.info(serviceA.hello());
-        LOG.info(serviceB.hello());
+//        LOG.info(serviceA.hello());
+//        LOG.info(serviceB.hello());
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 // TODO test context propagation, precondition:
