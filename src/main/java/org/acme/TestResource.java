@@ -5,6 +5,7 @@ import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.infrastructure.Infrastructure;
 import org.acme.model.JobType;
 import org.acme.service.Service;
+import org.acme.service.ServiceForA;
 import org.acme.service.ServiceLookup;
 
 import javax.enterprise.event.Observes;
@@ -22,9 +23,10 @@ public class TestResource {
 
     void onStart(@Observes StartupEvent ev) {
         Service serviceA = ServiceLookup.get(Service.class, JobType.A); //working -> finds ServiceForA
-        Service serviceA2 = ServiceLookup.get2(JobType.A);              //NOT working -> null
+//        Service serviceA2 = ServiceLookup.get2(JobType.A);              //NOT working -> null
+        Service serviceA22 = ServiceLookup.<Service>get2(JobType.A);              //NOT working -> null
 
-//        LOG.info(serviceA.hello());
+        LOG.info(serviceA.hello());
 //        LOG.info(serviceB.hello());
     }
 
