@@ -5,10 +5,10 @@ import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.infrastructure.Infrastructure;
 import org.acme.model.JobType;
 import org.acme.service.Service;
-import org.acme.service.ServiceForA;
-import org.acme.service.ServiceLookup;
+import org.acme.service.ServiceFactory;
 
 import javax.enterprise.event.Observes;
+import javax.management.InstanceNotFoundException;
 import javax.transaction.Transactional;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -21,13 +21,11 @@ public class TestResource {
 
     private static final Logger LOG = Logger.getLogger("TestResource");
 
-    void onStart(@Observes StartupEvent ev) {
-        Service serviceA = ServiceLookup.get(Service.class, JobType.A); //working -> finds ServiceForA
-//        Service serviceA2 = ServiceLookup.get2(JobType.A);              //NOT working -> null
-        Service serviceA22 = ServiceLookup.<Service>get2(JobType.A);              //NOT working -> null
-
+    void onStart(@Observes StartupEvent ev) throws InstanceNotFoundException {
+        Service serviceA = ServiceFactory.getFor(JobType.A);
         LOG.info(serviceA.hello());
-//        LOG.info(serviceB.hello());
+
+        Service serviceC = ServiceFactory.getFor(JobType.C);
     }
 
 
