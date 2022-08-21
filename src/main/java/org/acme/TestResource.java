@@ -25,7 +25,7 @@ public class TestResource {
         Service serviceA = ServiceFactory.getFor(JobType.A);
         LOG.info(serviceA.hello());
 
-        Service serviceC = ServiceFactory.getFor(JobType.C);
+        Service serviceC = ServiceFactory.getFor(JobType.C); //fail test
     }
 
 
