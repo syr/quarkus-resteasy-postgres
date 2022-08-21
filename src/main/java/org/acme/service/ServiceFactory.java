@@ -8,6 +8,6 @@ import javax.management.InstanceNotFoundException;
 @ApplicationScoped
 public class ServiceFactory {
     public static Service getFor(JobType jobType) throws InstanceNotFoundException {
-        return BeanLookup.get(Service.class, jobType);
+        return BeanLookup.getInstance(Service.class, jobType);
     }
 }

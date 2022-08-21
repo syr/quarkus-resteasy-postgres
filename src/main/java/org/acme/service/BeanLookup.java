@@ -9,14 +9,14 @@ import javax.management.InstanceNotFoundException;
 import java.util.Optional;
 
 public class BeanLookup {
-    public static <T extends Service> T get(Class<T> clazz, JobType jobType) throws InstanceNotFoundException {
-        T t = Arc.container().instance(clazz, new SupportsJobType.Impl(jobType)).get();
+    public static <T extends Service> T getInstance(Class<T> clazz, JobType jobType) throws InstanceNotFoundException {
+        T instance = Arc.container().instance(clazz, new SupportsJobType.Impl(jobType)).get();
 
-        if (Optional.ofNullable(t).isEmpty()) {
+        if (Optional.ofNullable(instance).isEmpty()) {
             throw new InstanceNotFoundException("");
         }
 
-        return t;
+        return instance;
     }
 
     public static <T extends Service> T get2(JobType jobType){
