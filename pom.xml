@@ -36,10 +36,14 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-arc</artifactId>
     </dependency>
+
+<!--    required for tracing-related MDCs to be set (visible in log entries), e.g. traceId-->
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-opentelemetry</artifactId>
     </dependency>
+
+<!--    required for traces to be exported to otel collector-->
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-opentelemetry-exporter-otlp</artifactId>
