@@ -38,12 +38,12 @@ public class CustomInterceptorTest {
 
     @Logging(value = false)
     public void serviceMethod_CallingAroundInvoke2() {
-        Log.info("in service method serviceMethod_CallingAroundInvoke");
+        Log.info("in service method serviceMethod_CallingAroundInvoke2");
     }
 
     @Logging(value = true)
     public void serviceMethod_NotCallingAroundInvoke2() {
-        Log.info("in service method serviceMethod_NotCallingAroundInvoke");
+        Log.info("in service method serviceMethod_NotCallingAroundInvoke2");
     }
 
 }
