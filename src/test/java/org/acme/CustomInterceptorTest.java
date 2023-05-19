@@ -11,7 +11,7 @@ public class CustomInterceptorTest {
     public void testAroundInvoke() {
         serviceMethod_CallingAroundInvoke();
         Log.info("############");
-        serviceMethod_NotCallingAroundInvoke();
+        serviceMethod_NotCallingAroundInvoke(); //WHY?
     }
 
     @MyAnnotation(value = false)
