@@ -13,7 +13,10 @@ public class Person extends PanacheEntityBase {
     @Id
     @Column
     public Long id;
+
+    @Column(name = "firstnameCol")
     public String firstname;
+    @Column(name = "lastnameCol")
     public String lastname;
 
     public Person() {
