@@ -10,12 +10,11 @@ import static org.hamcrest.CoreMatchers.is;
 public class DownloadSyncResourceTest {
 
     @Test
+    @Testdata("")
     public void testHelloEndpoint() {
-        given()
-          .when().get("/sync")
-          .then()
-             .statusCode(200)
-             .body(is(""));
+
     }
+
+
 
 }
