@@ -4,6 +4,7 @@ import io.quarkus.runtime.StartupEvent;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.infrastructure.Infrastructure;
 import org.acme.model.JobType;
+import org.acme.service.CDI;
 import org.acme.service.Service;
 import org.acme.service.ServiceFactory;
 
@@ -24,6 +25,10 @@ public class TestResource {
     void onStart(@Observes StartupEvent ev) throws InstanceNotFoundException {
         Service serviceA = ServiceFactory.getFor(JobType.A);
         LOG.info(serviceA.hello());
+
+        //ServiceFactory not really required
+        Service serviceA2 = CDI.getInstance(Service.class, JobType.A);
+
 
         Service serviceC = ServiceFactory.getFor(JobType.C); //fail test
     }

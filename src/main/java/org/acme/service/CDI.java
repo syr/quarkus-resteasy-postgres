@@ -8,7 +8,7 @@ import javax.enterprise.util.TypeLiteral;
 import javax.management.InstanceNotFoundException;
 import java.util.Optional;
 
-public class BeanLookup {
+public class CDI {
     public static <T extends Service> T getInstance(Class<T> clazz, JobType jobType) throws InstanceNotFoundException {
         T instance = Arc.container().instance(clazz, new SupportsJobType.Impl(jobType)).get();
 
