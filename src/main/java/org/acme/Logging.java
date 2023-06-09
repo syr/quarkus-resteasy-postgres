@@ -19,6 +19,4 @@ https://github.com/quarkusio/quarkus/blob/2.16/independent-projects/arc/tests/sr
 @Documented
 @InterceptorBinding
 public @interface Logging {
-    @Nonbinding
-    boolean value() default false;
 }
