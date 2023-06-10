@@ -11,8 +11,14 @@ import static org.hamcrest.CoreMatchers.is;
 public class PersonTest {
 
     @Test
-    @Testdata("testdata/person.sql")
+    @Testdata //default to testname + .sql -> testHelloEndpoint.sql
     public void testHelloEndpoint() {
+        Log.info("test started");
+    }
+
+    @Test
+    @Testdata("person.sql")
+    public void testHelloEndpointCustom() {
         Log.info("test started");
     }
 
