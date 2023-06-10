@@ -10,14 +10,12 @@ import static org.hamcrest.CoreMatchers.is;
 @QuarkusTest
 public class PersonTest {
 
-    @Test
-    @Testdata //default to testname + .sql -> testHelloEndpoint.sql
+    @Test @Testdata //default to testname + .sql -> testHelloEndpoint.sql
     public void testHelloEndpoint() {
         Log.info("test started");
     }
 
-    @Test
-    @Testdata("person.sql")
+    @Test @Testdata("person.sql")
     public void testHelloEndpointCustom() {
         Log.info("test started");
     }
