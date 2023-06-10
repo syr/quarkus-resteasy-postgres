@@ -3,14 +3,19 @@ package org.acme;
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.flywaydb.core.Flyway;
+import org.jboss.logging.Logger;
 
-import java.io.FileInputStream;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Map;
 import java.util.Properties;
 
 public class FlywayTestResource implements QuarkusTestResourceLifecycleManager {
 
+    Logger Log = Logger.getLogger(this.getClass().getName());
     @Override
     public Map<String, String> start() {
 
@@ -42,19 +47,13 @@ public class FlywayTestResource implements QuarkusTestResourceLifecycleManager {
     }
 
     public void copyApplicationPropertiesToSystemProperties() {
-        Properties properties = new Properties();
-
-        String path = this.getClass().getClassLoader().getResource("application.properties").getPath();
-
-        try (FileInputStream input = new FileInputStream(path)) {
-            properties.load(input);
-
-            for (String key : properties.stringPropertyNames()) {
-                String value = properties.getProperty(key);
-                System.setProperty(key, value);
-            }
-
-            System.out.println("Properties copied to environment variables successfully.");
+        Path path = new File(getClass().getClassLoader().getResource("application.properties").getFile()).toPath();
+        try (InputStream inputStream = Files.newInputStream(path)) {
+            Properties properties = new Properties();
+            properties.load(inputStream);
+            properties.forEach((k, v) -> System.setProperty(k.toString() ,v.toString()));
+            Log.info("Properties copied to environment variables successfully.");
+            Log.info(System.getProperties().entrySet().stream().filter(entry -> entry.getKey().toString().startsWith("quarkus")).toList());
         } catch (IOException e) {
             e.printStackTrace();
         }
