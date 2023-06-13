@@ -23,24 +23,17 @@ public class QuotesResource {
 
     @Channel("quote-requests") Emitter<String> quoteRequestEmitter;
 
-    @Channel("quotes") Multi<Quote> quotes;
-
-    /**
-     * Endpoint retrieving the "quotes" queue and sending the items to a server sent event.
-     */
-    @GET
-    @Produces(MediaType.SERVER_SENT_EVENTS)
-    public Multi<Quote> stream() {
-        return quotes;
+    @Incoming("quotes")
+    @Blocking
+    public void process(io.vertx.core.json.JsonObject quoteRequest) throws InterruptedException {
+        Log.info("quoteRequest processed");
     }
-
 
     /**
      * Endpoint to generate a new quote request id and send it to "quote-requests" RabbitMQ exchange using the emitter.
      *
      * Test by:
      * GET localhost:8080/quotes/
-     * GET http://localhost:8080/quotes/request
      *
      * Workflow:
      * GET http://localhost:8080/quotes/request
