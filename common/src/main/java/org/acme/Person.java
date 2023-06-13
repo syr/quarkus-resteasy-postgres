@@ -1,6 +1,7 @@
 package org.acme;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
+import io.quarkus.narayana.jta.QuarkusTransaction;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -19,9 +20,9 @@ public class Person extends PanacheEntityBase {
     public Person() {
     }
 
-    @Transactional
     public static void updateFirstnameStatic(String firstname){
-        update("firstname=?1 where id=1", firstname);
+        // @Transactional should not be used on static methods due to https://github.com/quarkusio/quarkus/issues/34005
+        QuarkusTransaction.requiringNew().call(() -> update("firstname=?1 where id=1", firstname));
     }
 
     @Transactional
