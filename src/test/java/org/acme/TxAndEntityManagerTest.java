@@ -7,6 +7,7 @@ import org.acme.entity.Person;
 import org.junit.jupiter.api.Test;
 
 import javax.inject.Inject;
+import javax.persistence.EntityManager;
 import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
 import javax.transaction.Transactional;
@@ -96,6 +97,29 @@ public class TxAndEntityManagerTest {
 //        Person.getEntityManager().refresh(foundPerson);
 
     }
+
+    @Test
+    public void testManagedByMerge() throws SystemException {
+        QuarkusTransaction.begin();
+            Person p = new Person();
+            p.id = 1L;
+            p.firstname = "firstname";
+            p.lastname = "Muster";
+            p.persist();
+        QuarkusTransaction.commit();
+
+        QuarkusTransaction.begin();
+            EntityManager entityManager = Person.getEntityManager();
+            assertFalse(entityManager.contains(p));
+            entityManager.merge(p); // re-attach by merge: https://stackoverflow.com/questions/912659/what-is-the-proper-way-to-re-attach-detached-objects-in-hibernate/60661154#60661154
+
+            //TODO check why merge is not making p managed again
+            // p.$$_hibernate_entityEntryHolder should be MANAGED
+            // p.$$_hibernate_entityEntryHolder.persistenceContext.entitiesByKey should contain Person entity)
+            assertTrue(entityManager.contains(p));
+        QuarkusTransaction.commit();
+    }
+
 
     Person findPersonNotCached1(Long pid) {
         Person person = Person.findById(pid);
