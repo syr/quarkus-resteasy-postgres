@@ -10,14 +10,14 @@
 #
 # Then, build the image with:
 #
-# docker build -f src/main/docker/Dockerfile.native-micro -t quarkus/quarkus-resteasy-postgres .
+# docker build -f src/main/docker/Dockerfile.native-micro -t quarkus/quartz-quickstart .
 #
 # Then run the container using:
 #
-# docker run -i --rm -p 8080:8080 quarkus/quarkus-resteasy-postgres
+# docker run -i --rm -p 8080:8080 quarkus/quartz-quickstart
 #
 ###
-FROM quay.io/quarkus/quarkus-micro-image:1.0
+FROM quay.io/quarkus/quarkus-micro-image:2.0
 WORKDIR /work/
 RUN chown 1001 /work \
     && chmod "g+rwX" /work \
