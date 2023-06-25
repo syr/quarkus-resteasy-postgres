@@ -17,6 +17,7 @@ public class QuotesResource {
 
     @Channel("quote-requests") Emitter<String> quoteRequestEmitter;
 
+//    https://smallrye.io/smallrye-reactive-messaging/smallrye-reactive-messaging/3.4/amqp/amqp.html#amqp-inbound
     @Incoming("quotes")
     @Blocking
     public void process(io.vertx.core.json.JsonObject quoteRequest) throws InterruptedException {
@@ -42,8 +43,14 @@ public class QuotesResource {
     @Path("/request")
     @Produces(MediaType.TEXT_PLAIN)
     public String createRequest() {
-        UUID uuid = UUID.randomUUID();
-        quoteRequestEmitter.send(uuid.toString());
-        return uuid.toString();
+        Log.info("finished message sending");
+
+        for (int i = 0; i < 1000; i++) {
+            UUID uuid = UUID.randomUUID();
+            quoteRequestEmitter.send(uuid.toString());
+        }
+
+        Log.info("finished message sending");
+        return "uuid.toString()";
     }
 }

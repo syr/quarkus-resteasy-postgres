@@ -4,6 +4,7 @@ import java.util.Random;
 
 import javax.enterprise.context.ApplicationScoped;
 
+import io.quarkus.logging.Log;
 import org.acme.amqp.model.Quote;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.eclipse.microprofile.reactive.messaging.Outgoing;
@@ -23,8 +24,9 @@ public class QuoteProcessor {
     @Outgoing("quotes")         // <2>
     @Blocking                   // <3>
     public Quote process(String quoteRequest) throws InterruptedException {
+        Log.info("received messsage");
         // simulate some hard working task
-        Thread.sleep(200);
+//        Thread.sleep(200);
         return new Quote(quoteRequest, random.nextInt(100));
     }
 }
