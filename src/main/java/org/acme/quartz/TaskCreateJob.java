@@ -1,14 +1,12 @@
 package org.acme.quartz;
 
-import io.opentelemetry.instrumentation.annotations.WithSpan;
-import io.quarkus.logging.Log;
+import io.quarkus.arc.Arc;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 
 public class TaskCreateJob implements Job {
     @Override
-    @WithSpan
     public void execute(JobExecutionContext jobExecutionContext) {
-        Log.info("created task");
+        Arc.container().select(TaskCreateJobBean.class).get().execute();
     }
 }
