@@ -2,10 +2,11 @@ package org.acme.quartz;
 
 import io.opentelemetry.instrumentation.annotations.WithSpan;
 import io.quarkus.logging.Log;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.transaction.Transactional;
 
 import io.quarkus.scheduler.Scheduled;
+
+import javax.enterprise.context.ApplicationScoped;
+import javax.transaction.Transactional;
 
 @ApplicationScoped
 public class TaskBean {
