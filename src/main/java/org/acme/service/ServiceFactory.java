@@ -1,13 +1,21 @@
 package org.acme.service;
 
-import org.acme.model.JobType;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.management.InstanceNotFoundException;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Produces;
+import org.acme.ServiceA;
+import org.acme.ServiceB;
 
 @ApplicationScoped
 public class ServiceFactory {
-    public static Service getFor(JobType jobType) throws InstanceNotFoundException {
-        return CDI.getInstance(Service.class, jobType);
+    @Produces
+    @ServiceA
+    Service produceServiceA() {
+         return new org.acme.service.Service("A");
+    }
+
+    @Produces
+    @ServiceB
+    Service produceServiceB() {
+        return new org.acme.service.Service("B");
     }
 }

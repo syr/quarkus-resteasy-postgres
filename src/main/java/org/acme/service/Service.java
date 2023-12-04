@@ -1,5 +1,9 @@
 package org.acme.service;
 
 public class Service {
-    public String hello(){ return "";}
+    String value;
+
+    public Service(String value) {
+        this.value = value;
+    }
 }
