@@ -1,19 +1,11 @@
-CREATE TABLE  if not exists  Download
-(
-    id          BIGSERIAL       NOT NULL,
-    idProperty1 VARCHAR(255) NOT NULL,
-    idProperty2 VARCHAR(255) NOT NULL,
-    finished    BOOLEAN,
-    CONSTRAINT pk_download PRIMARY KEY (idProperty1, idProperty2)
-);
 CREATE TABLE  if not exists  FilePart
 (
     id               BIGSERIAL NOT NULL,
     idProperty1      VARCHAR(255),
     idProperty2      VARCHAR(255),
-    filePartFilePath VARCHAR(255),
-    download_id      BIGINT
---     CONSTRAINT pk_filepart PRIMARY KEY (id),
---     CONSTRAINT FK_FILEPART_ON_DOWNLOAD FOREIGN KEY (download_id) REFERENCES Download (id)
+    filePartFilePath VARCHAR(255)
 );
 create sequence if not exists filepart_id_seq INCREMENT 1;
+
+INSERT INTO public.filepart (idproperty1, idproperty2, filepartfilepath) VALUES ('id1', 'id2', 'path1');
+INSERT INTO public.filepart (idproperty1, idproperty2, filepartfilepath) VALUES ('id11', 'id22', 'path11');
