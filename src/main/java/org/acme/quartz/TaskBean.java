@@ -11,6 +11,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.quartz.*;
 import software.amazon.awssdk.services.sqs.SqsClient;
 import software.amazon.awssdk.services.sqs.model.DeleteMessageRequest;
+import software.amazon.awssdk.services.sqs.model.QueueAttributeName;
 import software.amazon.awssdk.services.sqs.model.SendMessageResponse;
 
 import java.util.UUID;
@@ -29,31 +30,31 @@ public class TaskBean {
     String queueUrl;
 
     void onStart(@Observes StartupEvent event) throws SchedulerException {
-       JobDetail job = JobBuilder.newJob(SqsSendJob.class)
-                         .withIdentity("SqsSendJob", "myGroup")
-                         .build();
-       Trigger trigger = TriggerBuilder.newTrigger()
-                            .withIdentity("SqsSendJobTrigger", "myGroup")
-                            .startNow()
-                            .withSchedule(
-                               SimpleScheduleBuilder.simpleSchedule()
-                                  .withIntervalInSeconds(10)
-                                  .withRepeatCount(3))
-                            .build();
-       quartz.scheduleJob(job, trigger);
+//       JobDetail job = JobBuilder.newJob(SqsSendJob.class)
+//                         .withIdentity("SqsSendJob", "myGroup")
+//                         .build();
+//       Trigger trigger = TriggerBuilder.newTrigger()
+//                            .withIdentity("SqsSendJobTrigger", "myGroup")
+//                            .startNow()
+//                            .withSchedule(
+//                               SimpleScheduleBuilder.simpleSchedule()
+//                                  .withIntervalInSeconds(10)
+//                                  .withRepeatCount(3))
+//                            .build();
+//       quartz.scheduleJob(job, trigger);
 
-//        job = JobBuilder.newJob(SqsReceiveJob.class)
-//                .withIdentity("SqsReceiveJob", "myGroup")
-//                .build();
-//        trigger = TriggerBuilder.newTrigger()
-//                .withIdentity("SqsReceiveJobTrigger", "myGroup")
-//                .startNow()
-//                .withSchedule(
-//                        SimpleScheduleBuilder.simpleSchedule()
-//                                .withIntervalInSeconds(10)
-//                                .withRepeatCount(3))
-//                .build();
-//        quartz.scheduleJob(job, trigger);
+        JobDetail job = JobBuilder.newJob(SqsReceiveJob.class)
+                .withIdentity("SqsReceiveJob", "myGroup")
+                .build();
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .withIdentity("SqsReceiveJobTrigger", "myGroup")
+                .startNow()
+                .withSchedule(
+                        SimpleScheduleBuilder.simpleSchedule()
+                                .withIntervalInSeconds(10)
+                                .withRepeatCount(3))
+                .build();
+        quartz.scheduleJob(job, trigger);
     }
 
     @WithSpan
@@ -67,9 +68,13 @@ public class TaskBean {
     }
 
     void receiveMessage() {
-        sqs.receiveMessage(m -> m.maxNumberOfMessages(1).queueUrl(queueUrl)).messages().forEach(m -> {
+        sqs.receiveMessage(m -> m.maxNumberOfMessages(1)
+                        .queueUrl(queueUrl)
+                        .attributeNames(QueueAttributeName.ALL)
+                        .messageAttributeNames("AWSTraceHeader")
+        ).messages().forEach(m -> {
             Log.info("message received\tID=%s".formatted(m.messageId()));
-            Log.info("message system attributes: %s".formatted(m.attributesAsStrings().entrySet()
+            Log.info("message system attributes: %s".formatted(m.messageAttributes().entrySet()
                     .stream()
                     .map(e -> e.getKey() + "=\"" + e.getValue() + "\"")
                     .collect(Collectors.joining(", "))));
@@ -77,6 +82,7 @@ public class TaskBean {
                     .stream()
                     .map(e -> e.getKey() + "=\"" + e.getValue() + "\"")
                     .collect(Collectors.joining(", "))));
+            Log.info("AWSTraceHeader: " + m.messageAttributes().get("AWSTraceHeader"));
             sqs.deleteMessage(DeleteMessageRequest.builder().queueUrl(queueUrl).receiptHandle(m.receiptHandle()).build());
         });
         Log.info("message received");
