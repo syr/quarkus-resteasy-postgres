@@ -8,6 +8,7 @@ import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.jboss.logging.MDC;
 import org.quartz.*;
 import software.amazon.awssdk.services.sqs.SqsClient;
 import software.amazon.awssdk.services.sqs.model.DeleteMessageRequest;
@@ -30,31 +31,33 @@ public class TaskBean {
     String queueUrl;
 
     void onStart(@Observes StartupEvent event) throws SchedulerException {
-//       JobDetail job = JobBuilder.newJob(SqsSendJob.class)
-//                         .withIdentity("SqsSendJob", "myGroup")
-//                         .build();
-//       Trigger trigger = TriggerBuilder.newTrigger()
-//                            .withIdentity("SqsSendJobTrigger", "myGroup")
-//                            .startNow()
-//                            .withSchedule(
-//                               SimpleScheduleBuilder.simpleSchedule()
-//                                  .withIntervalInSeconds(10)
-//                                  .withRepeatCount(3))
-//                            .build();
-//       quartz.scheduleJob(job, trigger);
+       JobDetail job = JobBuilder.newJob(SqsSendJob.class)
+                         .withIdentity("myJob", "myGroup")
+                         .build();
+       Trigger trigger = TriggerBuilder.newTrigger()
+                            .withIdentity("myTrigger", "myGroup")
+                            .startNow()
+                            .withSchedule(
+                               SimpleScheduleBuilder.simpleSchedule()
+                                  .withIntervalInSeconds(10)
+                                  .withRepeatCount(3))
+                            .build();
+        Log.info("MDC: " + MDC.getMap().toString());
+        Log.info("onStart");
+       quartz.scheduleJob(job, trigger);
 
-        JobDetail job = JobBuilder.newJob(SqsReceiveJob.class)
-                .withIdentity("SqsReceiveJob", "myGroup")
-                .build();
-        Trigger trigger = TriggerBuilder.newTrigger()
-                .withIdentity("SqsReceiveJobTrigger", "myGroup")
-                .startNow()
-                .withSchedule(
-                        SimpleScheduleBuilder.simpleSchedule()
-                                .withIntervalInSeconds(10)
-                                .withRepeatCount(3))
-                .build();
-        quartz.scheduleJob(job, trigger);
+//        JobDetail job = JobBuilder.newJob(SqsReceiveJob.class)
+//                .withIdentity("SqsReceiveJob", "myGroup")
+//                .build();
+//        Trigger trigger = TriggerBuilder.newTrigger()
+//                .withIdentity("SqsReceiveJobTrigger", "myGroup")
+//                .startNow()
+//                .withSchedule(
+//                        SimpleScheduleBuilder.simpleSchedule()
+//                                .withIntervalInSeconds(10)
+//                                .withRepeatCount(3))
+//                .build();
+//        quartz.scheduleJob(job, trigger);
     }
 
     @WithSpan
@@ -95,7 +98,9 @@ public class TaskBean {
        TaskBean taskBean;
 
        public void execute(JobExecutionContext context) throws JobExecutionException {
-          taskBean.sendMessage();
+           Log.info("MDC: " + MDC.getMap().toString());
+           Log.info("SqsSendJob.execute");
+//          taskBean.sendMessage();
        }
     }
 
